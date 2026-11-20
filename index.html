@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cyber Security Project</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial;
+}
+body {
+    background: linear-gradient(135deg,#141e30,#493b80);
+    min-height: 100vh;
+}
+.login {
+    width: 380px;
+    background: white;
+    padding: 30px;
+    margin: 80px auto;
+    border-radius: 15px;
+    text-align: center;
+}
+h1 { color: #302b63; margin-bottom: 15px; }
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #aaa;
+    border-radius: 7px;
+    font-size: 16px;
+}
+button {
+    padding: 12px 20px;
+    background: #493b80;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 17px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+button:hover { background: #302b63; }
+#captcha {
+    font-size: 25px;
+    font-weight: bold;
+    color: #493b80;
+    letter-spacing: 6px;
+    margin: 15px;
+}
+.change {
+    background: #e0e7ff;
+    color: #302b63;
+    font-size: 15px;
+}
+#msg { color: red; margin-top: 12px; }
+
+/* Dashboard */
+.dashboard {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    background: #f1f5ff;
+    padding: 35px;
+}
+.header {
+    background: linear-gradient(90deg,#302b63,#493b80);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header h1 { color: white; font-size: 34px; }
+.header button { background: #e63946; }
+.welcome { font-size: 21px; margin-top: 20px; }
+.dashboard h2 {
+    font-size: 29px;
+    color: #63312b;
+    margin: 30px 0 20px;
+}
+.document {
+    background: white;
+    padding: 22px;
+    margin: 17px 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 10px #ccc;
+}
+.document h3 { font-size: 24px; }
+.document a {
+    background: #493b80;
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 7px;
+    font-size: 19px;
+}
+</style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div class="login" id="login">
+    <h1>Cyber Security</h1>
+    <p>Secure Document Portal</p>
+
+    <input id="user" placeholder="Enter Username">
+    <input id="pass" type="password" placeholder="Enter Password">
+
+    <p><b>Enter CAPTCHA</b></p>
+    <div id="captcha"></div>
+
+    <input id="answer" placeholder="Enter CAPTCHA">
+    <button class="change" onclick="generate()">Change CAPTCHA ↻</button>
+    <button onclick="loginUser()" style="width:100%">Login</button>
+    <p id="msg"></p>
+</div>
+
+<!-- Dashboard Page -->
+<div class="dashboard" id="dashboard">
+    <div class="header">
+        <h1>Cyber Security Dashboard</h1>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <p class="welcome">Welcome! You have successfully logged in.</p>
+    <h2>My Documents</h2>
+
+    <div class="document">
+        <h3>📄 Cyber Security Notes</h3>
+        <a href="documents/notes.pdf" target="_blank">View</a>
+    </div>
+
+    <div class="document">
+        <h3>📄 Network Security</h3>
+        <a href="documents/network.pdf" target="_blank">View</a>
+    </div>
+
+    <div class="document">
+        <h3>📄 Project Report</h3>
+        <a href="documents/report.pdf" target="_blank">View</a>
+    </div>
+</div>
+
+<script>
+let attempts = 0;
+let locked = false;
+let captchaValue;
+
+// Generate CAPTCHA
+function generate() {
+    captchaValue = Math.floor(1000 + Math.random() * 9000);
+    document.getElementById("captcha").innerText = captchaValue;
+    document.getElementById("answer").value = "";
+}
+
+// Login Function
+function loginUser() {
+    let user = document.getElementById("user").value;
+    let pass = document.getElementById("pass").value;
+    let answer = document.getElementById("answer").value;
+    let msg = document.getElementById("msg");
+
+    if (locked) {
+        msg.innerText = "Please wait for 2 minutes.";
+        return;
+    }
+
+    if (answer != captchaValue) {
+        msg.innerText = "Wrong CAPTCHA! Try again.";
+        generate();
+        return;
+    }
+
+    if (user === "Yugkarnwal" && pass === "123456") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+    } else {
+        attempts++;
+
+        if (attempts >= 3) {
+            locked = true;
+            msg.innerText = "Account locked for 2 minutes!";
+
+            setTimeout(function() {
+                attempts = 0;
+                locked = false;
+                msg.innerText = "You can try again now.";
+            }, 120000);
+        } else {
+            msg.innerText = "Wrong Login! Attempts left: " + (3-attempts);
+        }
+        generate();
+    }
+}
+
+// Logout Function
+function logout() {
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("login").style.display = "block";
+    document.getElementById("user").value = "";
+    document.getElementById("pass").value = "";
+    document.getElementById("msg").innerText = "";
+    generate();
+}
+
+generate();
+</script>
+</body>
+</html>
